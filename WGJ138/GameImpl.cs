@@ -13,6 +13,7 @@ namespace WGJ138 {
         public static UniformTextureAtlas Textures { get; private set; }
         public Board Board { get; private set; }
         public Camera Camera { get; private set; }
+        public Gameplay Gameplay { get; private set; }
 
         public GameImpl() {
             this.IsMouseVisible = true;
@@ -28,19 +29,22 @@ namespace WGJ138 {
             };
 
             this.Board = new Board(20, 10);
-            this.Board[5, 5].CurrentEntity = new Jack(new Point(5, 5));
+            new Jack(this.Board[5, 5]);
+            this.Gameplay = new Gameplay(this.Board, this.Camera);
         }
 
         protected override void DoUpdate(GameTime gameTime) {
             base.DoUpdate(gameTime);
             this.Camera.ConstrainWorldBounds(new Vector2(0, 0), new Vector2(this.Board.Width, this.Board.Height) * Board.TileSize);
             this.Board.Update(gameTime);
+            this.Gameplay.Update(gameTime);
         }
 
         protected override void DoDraw(GameTime gameTime) {
             base.DoDraw(gameTime);
-            this.SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, transformMatrix: this.Camera.ViewMatrix);
+            this.SpriteBatch.Begin(SpriteSortMode.FrontToBack, null, SamplerState.PointClamp, transformMatrix: this.Camera.ViewMatrix);
             this.Board.Draw(gameTime, this.SpriteBatch);
+            this.Gameplay.Draw(gameTime, this.SpriteBatch);
             this.SpriteBatch.End();
         }
 

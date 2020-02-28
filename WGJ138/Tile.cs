@@ -6,14 +6,15 @@ using WGJ138.Entities;
 namespace WGJ138 {
     public class Tile {
 
-        public Entity CurrentEntity;
-        public readonly bool CanOccupy;
-
+        public readonly Board Board;
         public readonly Point Position;
+        public readonly bool CanOccupy;
+        public Entity CurrentEntity;
 
-        public Tile(Point position, bool canOccupy) {
-            this.CanOccupy = canOccupy;
+        public Tile(Board board, Point position, bool canOccupy) {
+            this.Board = board;
             this.Position = position;
+            this.CanOccupy = canOccupy;
         }
 
         public void Update(GameTime time) {

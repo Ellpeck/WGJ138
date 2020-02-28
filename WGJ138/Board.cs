@@ -7,7 +7,11 @@ namespace WGJ138 {
         public const int TileSize = 16;
         private Tile[,] tiles;
         public Tile this[int x, int y] {
-            get => this.tiles[x, y];
+            get {
+                if (x < 0 || y < 0 || x >= this.Width || y >= this.Height)
+                    return null;
+                return this.tiles[x, y];
+            }
             set => this.tiles[x, y] = value;
         }
         public readonly int Width;
@@ -19,7 +23,7 @@ namespace WGJ138 {
             this.tiles = new Tile[width, height];
             for (var x = 0; x < width; x++) {
                 for (var y = 0; y < height; y++)
-                    this.tiles[x, y] = new Tile(new Point(x, y), true);
+                    this.tiles[x, y] = new Tile(this, new Point(x, y), true);
             }
         }
 
