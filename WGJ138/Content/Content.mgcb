@@ -13,3 +13,8 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Textures.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Textures.png
+
