@@ -10,6 +10,7 @@ using WGJ138.Entities;
 namespace WGJ138 {
     public class GameImpl : MlemGame {
 
+        public static readonly Random Random = new Random();
         public static UniformTextureAtlas Textures { get; private set; }
         public Board Board { get; private set; }
         public Camera Camera { get; private set; }
@@ -30,6 +31,9 @@ namespace WGJ138 {
 
             this.Board = new Board(20, 10);
             new Jack(this.Board[5, 5]);
+            for (var i = 0; i < 3; i++)
+                new MeleeTree(this.Board.RandomTile());
+
             this.Gameplay = new Gameplay(this.Board, this.Camera);
         }
 
@@ -41,6 +45,7 @@ namespace WGJ138 {
         }
 
         protected override void DoDraw(GameTime gameTime) {
+            this.GraphicsDevice.Clear(Color.Black);
             base.DoDraw(gameTime);
             this.SpriteBatch.Begin(SpriteSortMode.FrontToBack, null, SamplerState.PointClamp, transformMatrix: this.Camera.ViewMatrix);
             this.Board.Draw(gameTime, this.SpriteBatch);

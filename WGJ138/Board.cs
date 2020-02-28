@@ -5,7 +5,7 @@ namespace WGJ138 {
     public class Board {
 
         public const int TileSize = 16;
-        private Tile[,] tiles;
+        private readonly Tile[,] tiles;
         public Tile this[int x, int y] {
             get {
                 if (x < 0 || y < 0 || x >= this.Width || y >= this.Height)
@@ -41,6 +41,10 @@ namespace WGJ138 {
                     this[x, y].Draw(time, batch);
                 }
             }
+        }
+
+        public Tile RandomTile() {
+            return this[GameImpl.Random.Next(this.Width), GameImpl.Random.Next(this.Height)];
         }
 
     }

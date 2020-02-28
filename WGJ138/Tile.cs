@@ -8,13 +8,13 @@ namespace WGJ138 {
 
         public readonly Board Board;
         public readonly Point Position;
-        public readonly bool CanOccupy;
         public Entity CurrentEntity;
+        private readonly bool canOccupy;
 
         public Tile(Board board, Point position, bool canOccupy) {
             this.Board = board;
             this.Position = position;
-            this.CanOccupy = canOccupy;
+            this.canOccupy = canOccupy;
         }
 
         public void Update(GameTime time) {
@@ -26,6 +26,12 @@ namespace WGJ138 {
             batch.Draw(GameImpl.Textures[0, 0], this.Position.ToVector2() * Board.TileSize, Color.White);
             if (this.CurrentEntity != null)
                 this.CurrentEntity.Draw(time, batch);
+        }
+
+        public bool CanOccupy() {
+            if (!this.canOccupy)
+                return false;
+            return this.CurrentEntity == null;
         }
 
     }

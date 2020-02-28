@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Coroutine;
 using Microsoft.Xna.Framework;
@@ -14,24 +15,25 @@ namespace WGJ138.Entities {
         public Point Position => this.CurrentTile.Position;
         protected Vector2 VisualPosition;
         protected int MoveRange;
+        public float Speed { get; protected set; } = 1;
 
         public Entity(Tile currentTile, SpriteAnimation animation) {
             this.Move(currentTile);
             this.Animation = animation;
         }
 
-        public void Move(Tile newTile) {
+        public IEnumerable<IWait> Move(Tile newTile) {
             if (this.CurrentTile != null) {
                 this.CurrentTile.CurrentEntity = null;
-                CoroutineHandler.Start(this.MoveToTile(newTile.Position.ToVector2()));
             } else {
                 this.VisualPosition = newTile.Position.ToVector2();
             }
             this.CurrentTile = newTile;
             newTile.CurrentEntity = this;
+            return this.MoveToTile(newTile.Position.ToVector2());
         }
 
-        private IEnumerator<IWait> MoveToTile(Vector2 newTilePos) {
+        private IEnumerable<IWait> MoveToTile(Vector2 newTilePos) {
             while (true) {
                 var diff = newTilePos - this.VisualPosition;
                 if (diff.Length() < 0.1F) {
@@ -53,7 +55,11 @@ namespace WGJ138.Entities {
         }
 
         protected virtual float GetRenderDepth(float offset = 0) {
-            return (this.Position.Y + offset) / this.CurrentTile.Board.Height;
+            return (this.Position.Y + 1 + offset) / this.CurrentTile.Board.Height;
+        }
+
+        public virtual IEnumerable<IWait> MakeTurn(Gameplay gameplay) {
+            return null;
         }
 
         public IEnumerable<Tile> GetMovableTiles() {
@@ -62,7 +68,7 @@ namespace WGJ138.Entities {
                     if (x == 0 && y == 0)
                         continue;
                     var tile = this.CurrentTile.Board[this.Position.X + x, this.Position.Y + y];
-                    if (tile != null && tile.CanOccupy)
+                    if (tile != null && tile.CanOccupy())
                         yield return tile;
                 }
             }
