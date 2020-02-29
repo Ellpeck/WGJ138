@@ -32,7 +32,8 @@ namespace WGJ138 {
             };
 
             this.Board = new Board(20, 10);
-            new Jack(this.Board[5, 5]);
+            new Jack(this.Board[3, 5], 0);
+            new Jack(this.Board[8, 5], 1);
             for (var i = 0; i < 3; i++)
                 new MeleeTree(this.Board.RandomTile());
 

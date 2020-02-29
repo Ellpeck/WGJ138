@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WGJ138.Entities;
 
 namespace WGJ138 {
     public class Board {
@@ -39,6 +42,16 @@ namespace WGJ138 {
             for (var x = 0; x < this.Width; x++) {
                 for (var y = 0; y < this.Height; y++) {
                     this[x, y].Draw(time, batch);
+                }
+            }
+        }
+
+        public IEnumerable<Entity> GetEntities(Func<Entity, bool> predicate) {
+            for (var x = 0; x < this.Width; x++) {
+                for (var y = 0; y < this.Height; y++) {
+                    var tile = this[x, y];
+                    if (tile.CurrentEntity != null && predicate(tile.CurrentEntity))
+                        yield return tile.CurrentEntity;
                 }
             }
         }
