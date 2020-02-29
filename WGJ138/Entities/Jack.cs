@@ -12,7 +12,7 @@ using MLEM.Textures;
 namespace WGJ138.Entities {
     public class Jack : Entity {
 
-        public Jack(Tile currentTile) : base(currentTile, new SpriteAnimation(0.4F, GameImpl.Textures[0, 1], GameImpl.Textures[0, 2])) {
+        public Jack(Tile currentTile) : base(currentTile, new SpriteAnimation(0.4F, GameImpl.Textures[0, 1], GameImpl.Textures[0, 2]), 10) {
             this.MoveRange = 1;
             this.Speed = 2;
         }
@@ -22,10 +22,19 @@ namespace WGJ138.Entities {
                 yield return new WaitEvent(CoroutineEvents.Update);
                 if (MlemGame.Input.IsMouseButtonPressed(MouseButton.Left)) {
                     var hoveredTile = gameplay.GetHoveredTile();
-                    if (this.GetMovableTiles().Contains(hoveredTile)) {
+                    if (!this.GetTilesInRange().Contains(hoveredTile))
+                        continue;
+
+                    if (hoveredTile.CanOccupy()) {
                         foreach (var wait in this.Move(hoveredTile))
                             yield return wait;
                         yield return new WaitSeconds(0.5F);
+                        break;
+                    }
+
+                    if (hoveredTile.CurrentEntity != null) {
+                        foreach (var wait in this.Attack(hoveredTile.CurrentEntity))
+                            yield return wait;
                         break;
                     }
                 }

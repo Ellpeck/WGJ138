@@ -30,11 +30,16 @@ namespace WGJ138 {
         public void Update(GameTime time) {
             if (this.currentMove != null && !this.currentMove.IsFinished)
                 return;
-            if (this.remainingRound.Count <= 0)
-                this.PopulateRound();
+            do {
+                if (this.remainingRound.Count <= 0)
+                    this.PopulateRound();
 
-            this.currentEntity = this.remainingRound.Dequeue();
-            this.currentMove = CoroutineHandler.Start(this.currentEntity.MakeTurn(this).GetEnumerator());
+                this.currentEntity = this.remainingRound.Dequeue();
+                if (this.currentEntity.IsDead)
+                    continue;
+                this.currentMove = CoroutineHandler.Start(this.currentEntity.MakeTurn(this).GetEnumerator());
+                break;
+            } while (true);
         }
 
         public Tile GetHoveredTile() {
@@ -51,7 +56,7 @@ namespace WGJ138 {
                         entities.Add(tile.CurrentEntity);
                 }
             }
-            entities.Sort((e1, e2) => Comparer<float>.Default.Compare(e1.Speed, e2.Speed));
+            entities.Sort((e1, e2) => Comparer<float>.Default.Compare(e2.Speed, e1.Speed));
             foreach (var entity in entities)
                 this.remainingRound.Enqueue(entity);
         }
@@ -60,8 +65,10 @@ namespace WGJ138 {
             if (this.currentEntity != null) {
                 this.DrawSelection(batch, this.currentEntity.Position, Color.Red);
                 if (this.currentEntity is Jack) {
-                    foreach (var tile in this.currentEntity.GetMovableTiles())
-                        this.DrawSelection(batch, tile.Position, Color.Green);
+                    foreach (var tile in this.currentEntity.GetTilesInRange()) {
+                        var color = tile.CanOccupy() ? Color.Green : Color.Orange;
+                        this.DrawSelection(batch, tile.Position, color);
+                    }
                 }
             }
         }

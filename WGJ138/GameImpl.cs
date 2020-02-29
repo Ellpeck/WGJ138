@@ -10,6 +10,7 @@ using WGJ138.Entities;
 namespace WGJ138 {
     public class GameImpl : MlemGame {
 
+        public static GameImpl Instance { get; private set; }
         public static readonly Random Random = new Random();
         public static UniformTextureAtlas Textures { get; private set; }
         public Board Board { get; private set; }
@@ -17,6 +18,7 @@ namespace WGJ138 {
         public Gameplay Gameplay { get; private set; }
 
         public GameImpl() {
+            Instance = this;
             this.IsMouseVisible = true;
         }
 
