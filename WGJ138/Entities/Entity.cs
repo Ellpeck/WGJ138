@@ -5,8 +5,12 @@ using Coroutine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MLEM.Animations;
+using MLEM.Extensions;
+using MLEM.Misc;
 using MLEM.Startup;
 using MLEM.Textures;
+using MLEM.Ui;
+using MLEM.Ui.Elements;
 
 namespace WGJ138.Entities {
     public class Entity {
@@ -17,6 +21,7 @@ namespace WGJ138.Entities {
         public bool IsDead => this.Health <= 0;
         protected Vector2 VisualPosition;
         protected int MoveRange;
+        private readonly ProgressBar healthBar;
 
         public int MaxHealth { get; protected set; }
         public int Health { get; private set; }
@@ -30,6 +35,38 @@ namespace WGJ138.Entities {
             this.Animation = animation;
             this.MaxHealth = maxHealth;
             this.Health = maxHealth;
+
+            if (this.MaxHealth > 0) {
+                var ui = GameImpl.Instance.UiSystem;
+                var root = ui.Get("Health").Element;
+
+                this.healthBar = root.AddChild(new ProgressBar(Anchor.TopLeft, new Vector2(20, 5), Direction2.Right, 1) {
+                    IsHidden = true,
+                    DrawAlpha = 0,
+                    Texture = GameImpl.Instance.SpriteBatch.GenerateTexture(new Color(100, 50, 50))
+                });
+                this.healthBar.OnUpdated = (e, time) => {
+                    var pos = this.VisualPosition + new Vector2(0.5F, -0.65F);
+                    var offset = GameImpl.Instance.Camera.ToCameraPos(pos * Board.TileSize) / e.Scale;
+                    offset.X -= e.Size.X / 2;
+                    e.PositionOffset = offset;
+                    this.healthBar.CurrentValue = this.Health / (float) this.MaxHealth;
+                };
+            }
+        }
+
+        private IEnumerator<IWait> ShowHealthBar(float seconds) {
+            this.healthBar.IsHidden = false;
+            while (this.healthBar.DrawAlpha < 1) {
+                this.healthBar.DrawAlpha += 0.05F;
+                yield return new WaitEvent(CoroutineEvents.Update);
+            }
+            yield return new WaitSeconds(seconds);
+            while (this.healthBar.DrawAlpha > 0) {
+                this.healthBar.DrawAlpha -= 0.05F;
+                yield return new WaitEvent(CoroutineEvents.Update);
+            }
+            this.healthBar.IsHidden = true;
         }
 
         public IEnumerable<IWait> Move(Tile newTile) {
@@ -42,6 +79,8 @@ namespace WGJ138.Entities {
             if (newTile != null) {
                 newTile.CurrentEntity = this;
                 return this.MoveTo(newTile.Position.ToVector2());
+            } else {
+                this.healthBar.Parent.RemoveChild(this.healthBar);
             }
             return null;
         }
@@ -60,6 +99,7 @@ namespace WGJ138.Entities {
         }
 
         protected IEnumerable<IWait> Attack(Entity other) {
+            CoroutineHandler.Start(other.ShowHealthBar(1));
             foreach (var wait in this.MoveTo(other.VisualPosition))
                 yield return wait;
             other.OnAttacked(this);

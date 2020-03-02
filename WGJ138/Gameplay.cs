@@ -37,7 +37,10 @@ namespace WGJ138 {
                 this.currentEntity = this.remainingRound.Dequeue();
                 if (this.currentEntity.IsDead)
                     continue;
-                this.currentMove = CoroutineHandler.Start(this.currentEntity.MakeTurn(this).GetEnumerator());
+                var turn = this.currentEntity.MakeTurn(this);
+                if (turn == null)
+                    continue;
+                this.currentMove = CoroutineHandler.Start(turn.GetEnumerator());
                 break;
             } while (true);
         }

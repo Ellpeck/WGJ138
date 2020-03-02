@@ -5,6 +5,8 @@ using MLEM.Cameras;
 using MLEM.Extensions;
 using MLEM.Startup;
 using MLEM.Textures;
+using MLEM.Ui;
+using MLEM.Ui.Elements;
 using WGJ138.Entities;
 
 namespace WGJ138 {
@@ -31,11 +33,14 @@ namespace WGJ138 {
                 Scale = 4
             };
 
+            this.UiSystem.GlobalScale = 4;
+            this.UiSystem.Add("Health", new Group(Anchor.TopLeft, Vector2.One, false));
+
             this.Board = new Board(20, 10);
             new Jack(this.Board[3, 5], 0);
             new Jack(this.Board[8, 5], 1);
             for (var i = 0; i < 3; i++)
-                new MeleeTree(this.Board.RandomTile());
+                new MeleeTree(this.Board.RandomFreeTile());
 
             this.Gameplay = new Gameplay(this.Board, this.Camera);
         }

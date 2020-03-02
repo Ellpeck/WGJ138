@@ -56,8 +56,12 @@ namespace WGJ138 {
             }
         }
 
-        public Tile RandomTile() {
-            return this[GameImpl.Random.Next(this.Width), GameImpl.Random.Next(this.Height)];
+        public Tile RandomFreeTile() {
+            while (true) {
+                var tile = this[GameImpl.Random.Next(this.Width), GameImpl.Random.Next(this.Height)];
+                if (tile.CanOccupy() && tile.CurrentEntity == null)
+                    return tile;
+            }
         }
 
     }
