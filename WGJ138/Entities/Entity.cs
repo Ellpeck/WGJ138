@@ -40,7 +40,7 @@ namespace WGJ138.Entities {
                 var ui = GameImpl.Instance.UiSystem;
                 var root = ui.Get("Health").Element;
 
-                this.healthBar = root.AddChild(new ProgressBar(Anchor.TopLeft, new Vector2(20, 5), Direction2.Right, 1) {
+                this.healthBar = root.AddChild(new ProgressBar(Anchor.TopLeft, new Vector2(15, 5), Direction2.Right, 1) {
                     IsHidden = true,
                     DrawAlpha = 0,
                     Texture = GameImpl.Instance.SpriteBatch.GenerateTexture(new Color(100, 50, 50))
@@ -99,7 +99,7 @@ namespace WGJ138.Entities {
         }
 
         protected IEnumerable<IWait> Attack(Entity other) {
-            CoroutineHandler.Start(other.ShowHealthBar(1));
+            CoroutineHandler.Start(other.ShowHealthBar(0.5F));
             foreach (var wait in this.MoveTo(other.VisualPosition))
                 yield return wait;
             other.OnAttacked(this);
